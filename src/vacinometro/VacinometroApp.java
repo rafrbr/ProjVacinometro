@@ -1,3 +1,13 @@
+/**
+ * @author Raquel Facchini Batista Franco 
+ * @author Rafael Lima Honorato
+ * @author Raphael Santos
+ * @apiNote Trabalho de Linguagem de Programação Java
+ * @version 1.0  
+ * Fatec Praia Grande 
+ * @since 15 de Junho de 2022.
+ */
+
 package vacinometro;
 
 import java.io.BufferedReader;
@@ -85,13 +95,13 @@ public class VacinometroApp implements Serializable {
 	}
 
 	private static void exportarDadosVacinometro() {
-		deleteFile("vacinometro.csv");
+		deleteFile("vacinometroExport.csv");
 		
 		DosesAplicadas[] daVetor = getVetorDosesAplicadas();
 		Arrays.sort(daVetor);
 		
 		try (BufferedWriter bw = new BufferedWriter(
-				new OutputStreamWriter(new FileOutputStream("vacinometro.csv"), StandardCharsets.ISO_8859_1))) {
+				new OutputStreamWriter(new FileOutputStream("vacinometroExport.csv"), StandardCharsets.ISO_8859_1))) {
 			bw.write("Município;Dose;Total Doses Aplicadas"); // cabeçalho do arquivo CSV
 			bw.newLine();
 			for (DosesAplicadas da : daVetor) {
@@ -99,6 +109,7 @@ public class VacinometroApp implements Serializable {
 						da.getQtdDosesAplicadas()));
 				bw.newLine();
 			}
+			System.out.println("Exportação realizada com sucesso.");
 		} catch (IOException e) {
 			System.out.println("Erro de leitura no arquivo");
 		}
@@ -222,6 +233,7 @@ public class VacinometroApp implements Serializable {
 				DosesAplicadas dosesAplicadas = new DosesAplicadas(c, tipoDose, qtdDose);
 				gravarDosesAplicadas(dosesAplicadas);
 			}
+			System.out.println("Doses Aplicadas para a cidade de " + nomeCidade +" atualizadas com sucesso.");
 		} catch (InvalidPathException e) {
 			System.out.println("Nao foi possivel encontrar o arquivo cidades.obj!");
 		} catch (InputMismatchException e) {
@@ -259,6 +271,7 @@ public class VacinometroApp implements Serializable {
 				return;
 			}
 			gravarTipoDose(new TipoDose(nomeTipoDose.toUpperCase()));
+			System.out.println("Tipo de dose adicionada com sucesso.");
 		} catch (InvalidPathException e) {
 			System.out.println("Nao foi possivel encontrar o arquivo tipodose.obj!");
 		} catch (InputMismatchException e) {
@@ -276,6 +289,7 @@ public class VacinometroApp implements Serializable {
 				return;
 			}
 			gravarCidade(new Cidade(nomeCidade.toUpperCase()));
+			System.out.println("Cidade adicionada com sucesso.");
 		} catch (InvalidPathException e) {
 			System.out.println("Nao foi possivel encontrar o arquivo cidades.obj!");
 		} catch (InputMismatchException e) {
@@ -402,6 +416,7 @@ public class VacinometroApp implements Serializable {
 		if (Files.exists(path)) {
 			try (ObjectInputStream input = new ObjectInputStream(Files.newInputStream(path))) {
 				System.out.println("Nome da Cidade");
+				System.out.println("-------------------------------------------------------");
 				while (true) {
 					Cidade c = (Cidade) input.readObject();
 					System.out.println(c.getNome());
@@ -423,6 +438,7 @@ public class VacinometroApp implements Serializable {
 		if (Files.exists(path)) {
 			try (ObjectInputStream input = new ObjectInputStream(Files.newInputStream(path))) {
 				System.out.println("Tipo de Dose");
+				System.out.println("-------------------------------------------------------");
 				while (true) {
 					TipoDose td = (TipoDose) input.readObject();
 					System.out.println(td.getNome());
@@ -542,7 +558,7 @@ public class VacinometroApp implements Serializable {
 	private static void importarDadosVacinometro() {
 		long qtdLinhas = qtdLinhasArquivoCSV();
 
-		try (BufferedReader br = new BufferedReader(new FileReader("20220606_vacinometro.csv"))) {
+		try (BufferedReader br = new BufferedReader(new FileReader("vacinometro.csv"))) {
 			String[] vetCidadesObjSemRepeticao = new String[(int) qtdLinhas];
 			String[] vetTiposDoses = new String[(int) qtdLinhas];
 			DosesAplicadas[] vetDosesAplicadas = new DosesAplicadas[(int) qtdLinhas - 1];
@@ -604,7 +620,7 @@ public class VacinometroApp implements Serializable {
 				gravarCidade(cidade);
 				// }
 			}
-
+			System.out.println("Importação do arquivo vacinometro.csv realizada com sucesso.");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -638,7 +654,7 @@ public class VacinometroApp implements Serializable {
 	private static long qtdLinhasArquivoCSV() {
 		long qtdLinhas = 0;
 		try {
-			qtdLinhas = Files.lines(Paths.get("20220606_vacinometro.csv")).count();
+			qtdLinhas = Files.lines(Paths.get("vacinometro.csv")).count();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
